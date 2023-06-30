@@ -6,7 +6,9 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
 <flow name="get:\songs:ca-music-factory-api-config">
-        <ee:transform>
+		<set-variable value="artists-main::impl-get-songs" doc:name="currentFlow" doc:id="49be528d-7765-4114-8e5c-b35bec697ba7" variableName="currentFlow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="30bda672-577d-4007-8ebe-000a2e1bce5b" name="impl-get-songs"/>
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json

@@ -6,7 +6,9 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
 	<flow name="get:\artists:ca-music-factory-api-config">
-        <ee:transform>
+        <set-variable value="artists-main::impl-get-artists" doc:name="currentFlow" doc:id="35a68106-0159-4ff7-9b9a-3ad8e3098ade" variableName="currentFlow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="f082cb19-0bc7-4369-9484-646243708033" name="impl-get-artists"/>
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -110,7 +112,9 @@ output application/json
         </ee:transform>
     </flow>
 	<flow name="post:\artists:application\json:ca-music-factory-api-config">
-        <ee:transform>
+        <set-variable value="artists-main::impl-add-artists" doc:name="currentFlow" doc:id="5b000b2e-a4e1-41f1-8b3c-b746326ba985" variableName="currentFlow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="f06e6368-2b78-4a96-bf74-7744642e671c" name="impl-add-artists"/>
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -164,7 +168,9 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="patch:\artists\(artistId):application\json:ca-music-factory-api-config">
-        <ee:transform>
+        <set-variable value="artists-main::impl-update-artist-urls" doc:name="currentFlow" doc:id="e98cc140-a872-48b2-9a96-98edfcf7ca6d" variableName="currentFlow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="97dd4a60-3837-4737-83f8-9c21d60120b9" name="impl-update-artist-urls"/>
+		<ee:transform>
             <ee:variables>
                 <ee:set-variable variableName="artistId">attributes.uriParams.'artistId'</ee:set-variable>
             </ee:variables>
