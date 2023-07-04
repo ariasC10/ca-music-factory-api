@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<sub-flow name="impl-get-artists" doc:id="2b2d7a76-722e-4591-9308-e0b9c9ca9050" >
 		<logger level="INFO" doc:name="INFO START" doc:id="2ddda534-015d-4f28-884f-cfe2c73f39ff" message="impl-get-artists::START"/>
+		<set-variable value="#[attributes.queryParams.groupName]" doc:name="groupName" doc:id="a1f4c6f2-dd48-4258-8657-610a17d57b30" variableName="groupName"/>
+		<db:select doc:name="SELECT artist" doc:id="469815ae-ede0-4c4e-b6ea-aceaa2799de5" config-ref="mysql-config">
+			<db:sql ><![CDATA[SELECT ARTIST_ID, GROUP_NM, FIRST_NM, LAST_NM, BIRTH_DATE, MI, DEATH_DATE 	
+FROM bc_artist 
+WHERE GROUP_NM LIKE :groupName]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	groupName: vars.groupName ++ '%'
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="payload" doc:id="9b6ac348-302c-4155-a925-3318beb782c2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: p('http.get.status.ok'),
+	message: p('http.get.message.ok'),
+	searchCriteria: vars.groupName,
+	artists: payload map ( artist ) ->
+	{
+		artistId: artist.ARTIST_ID,
+		groupName: artist.GROUP_NM default "",
+		lastName: artist.LAST_NM default "",
+		firstName: artist.FIRST_NM default "",
+		dateOfBirth: artist.BIRTH_DATE as String { format: "yyyy-MM-dd" } default "",
+		mi: artist.MI default "",
+		dateOfDeath: artist.DEATH_DATE as String { format: "yyyy-MM-dd" } default ""
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</sub-flow>
 	<sub-flow name="impl-add-artists" doc:id="e9774feb-d5e4-4e12-95fa-5de313bd926c" >
 		<logger level="INFO" doc:name="INFO START" doc:id="bd068adc-8b8c-4af4-8527-8e452cb50cff" message="#['impl-add-artists::START::payload:'  ++ write(payload, 'application/json')]"/>
