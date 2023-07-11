@@ -50,6 +50,9 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			</db:connection-properties>
 		</db:my-sql-connection>
 	</db:config>
+	<http:request-config name="last-fm-http-config" doc:name="HTTP Request configuration" doc:id="b5136372-ece2-4359-bd07-751a201a7d98" >
+		<http:request-connection host="${last.fm.host}" port="${last.fm.port}" />
+	</http:request-config>
 	<error-handler name="globalErrorHandler">
             <on-error-propagate type="APIKIT:BAD_REQUEST" enableNotifications="true" logException="false">
 				<set-variable value="400" doc:name="Set HTTP Status code" doc:id="1d6586fd-fb35-42e5-8bdc-3c21840bba73" variableName="statusCode"/>

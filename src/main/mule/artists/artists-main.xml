@@ -104,19 +104,6 @@ output application/json
                 <ee:set-variable variableName="artistId">attributes.uriParams.'artistId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  statusCode: 201,
-  message: "SUCCESS",
-  bioUrl: "https://last.fm/music/The Beatles/+wiki",
-  recordsUpdated: 3
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
     </flow>
 	<flow name="delete:\artists\(artistId):ca-music-factory-api-config">
         <ee:transform>
