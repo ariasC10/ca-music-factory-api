@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="main-continue" doc:id="42389e0a-b682-4224-81cb-29ffcd14b6be" >
+		<http:listener doc:name="GET /mainContinue" doc:id="a6db1dec-8b49-493e-a333-b88e9a28fb9f" path="/mainContinue" config-ref="HTTP_Listener_config"/>
+		<set-payload value="#['Success - Begin main flow']" doc:name="Success - Begin main flow" doc:id="ee211ab9-af85-41cb-b06b-7c366c2e759b" />
+		<validation:is-number numberType="INTEGER" doc:name="Validate someNumber" doc:id="ade3dcc6-5f22-48bc-80cc-87948550b5c8" value="#[attributes.queryParams.someNumber]" minValue="0" maxValue="9999" message="#['Value entered ' ++ (attributes.queryParams.someNumber as String) ++ ' is not valid (0-9999)']"/>
+		<set-payload value="#['Success - End main flow']" doc:name="Success - End main flow" doc:id="5152a49a-a2b1-4d91-b25c-bf5dc387f7d4" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5b187759-64c9-494c-9480-7fedadbeb231" >
+				<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+	"errorHandler": "main-continue-error-handler",
+	"errorType": error.errorType.identifier,
+	"errorMessage": error.description
+}]' doc:name="Error - main flow" doc:id="bc15ef29-ef5e-412f-b553-ccb47e220746" />
+				<logger level="INFO" doc:name="Logger" doc:id="e01f31bc-eeb7-4dfb-a1cc-ac27af7c9e1b" message="Error - main flow" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="main-propagate" doc:id="2fe2362b-9302-4d44-bee8-6cbba82479d9" >
+		<http:listener doc:name="GET /mainPropagate" doc:id="cb9bab34-9073-444e-8d6d-7449c5379a02" config-ref="HTTP_Listener_config" path="/mainPropagate" />
+		<set-payload value="#['Success - Begin main propagate flow']" doc:name="Success - Begin main propagate flow" doc:id="51d8ff5f-20cc-49ba-ad0a-e175478b6750" />
+		<validation:is-number numberType="INTEGER" doc:name="Validate someNumber" doc:id="d475faea-d845-4e0d-a4be-640fdec1b31b" value="#[attributes.queryParams.someNumber]" minValue="0" maxValue="9999" message="#['Value entered ' ++ (attributes.queryParams.someNumber as String) ++ ' is not valid (0-9999)']" />
+		<set-payload value="#['Success - End main propagate flow']" doc:name="Success - End main propagate flow" doc:id="33123ff6-2564-41cd-b5be-acaecfa19f2e" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0758da01-6c72-44ab-ae69-bd48450f3d5e" type="ANY">
+				<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+	"errorHandler": "main-propagate-error-handler",
+	"errorType": error.errorType.identifier,
+	"errorMessage": error.description
+}]' doc:name="Error - main propagate flow" doc:id="28019bfb-8567-46e5-9f2e-c33a7c3879bf" />
+				<logger level="INFO" doc:name="Log Propagate" doc:id="ef0cba45-75fa-462f-abdc-c23855a3adb9" message="Error main-propagate flow" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="main-private" doc:id="22a31bf7-86ce-4d29-8a0e-4b4523b72d43" >
+		<http:listener doc:name="GET /mainPrivate" doc:id="8c71a635-65ab-451c-bee2-557b2c3b5d1a" config-ref="HTTP_Listener_config" path="/mainPrivate" />
+		<set-payload value="#['Success - Begin main private flow']" doc:name="Success - Begin main private flow" doc:id="40baaaa9-5f63-4020-abba-4ebfb4922aa6" />
+		<set-variable value="#[attributes.queryParams.errorType]" doc:name="errorType" doc:id="ba523d3e-b6a3-4b71-8e39-0afa8ea7ab99" variableName="errorType"/>
+		<set-variable value="#[attributes.queryParams.useTryBlock]" doc:name="useTryBlock" doc:id="fc9ddeba-3d40-4191-9495-e0a0d6675541" variableName="useTryBlock"/>
+		<choice doc:name="Choice" doc:id="433a1736-d7d3-420e-9908-c5cc8df7ee6e" >
+			<when expression="#[vars.errorType == 'error']">
+				<flow-ref doc:name="privateError" doc:id="35099387-1a19-4021-9795-4a5c4cc4a344" name="privateError" />
+			</when>
+			<otherwise >
+				<flow-ref doc:name="privateContinue" doc:id="3d674934-1b17-4a9e-bb80-07d09cbf2e26" name="privateContinue"/>
+			</otherwise>
+		</choice>
+		<set-payload value="#['Success - End main private flow']" doc:name="Success - End main private flow" doc:id="536a5c7c-5448-473e-9094-f71323608857" />
+	</flow>
+	<flow name="privateError" doc:id="b807b5c6-2fa7-414a-97dc-216fc878bbee" >
+		<logger level="INFO" doc:name="START" doc:id="466742b4-69ce-4b18-bc7e-f07a604eaa10" message="main-private::private::START"/>
+		<choice doc:name="useTryBlock?" doc:id="49f7d2d2-a1fe-467c-b9fe-f8c7ecd3caa4" >
+			<when expression='#[vars.useTryBlock == "true"]'>
+				<try doc:name="Try" doc:id="9ce81c4e-457b-4357-af4b-82a439b13a2a" >
+					<logger level="INFO" doc:name="Logger" doc:id="be697d46-3b97-490c-b8ca-5f329e04c8bc" message="private::TRY_BLOCK"/>
+					<validation:is-number numberType="INTEGER" doc:name="Validate someNumber" doc:id="bcd9d264-e5db-4dc8-ab0a-ac665e07c69b" value="#[attributes.queryParams.someNumber]" minValue="0" maxValue="9999" message="#['Value entered ' ++ (attributes.queryParams.someNumber as String) ++ ' is not valid (0-9999)']" />
+					<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f4ead2b3-ffb6-411b-87ed-25e57bbe9580" >
+							<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+	"errorHandler": "try-block-error-handler",
+	"errorType": error.errorType.identifier,
+	"errorMessage": error.description
+}]' doc:name="Set Payload" doc:id="a62eb3c0-0177-41b0-bdaf-84a517db8ce3" />
+							<logger level="ERROR" doc:name="Logger" doc:id="e41ce541-b7a0-4134-9f4d-bb31346544a7" message="private::TRY_BLOCK::ErrorHandling::OnErrorPropagate"/>
+						</on-error-propagate>
+					</error-handler>
+				</try>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="bc339b2d-107f-489a-bd56-febdbef0bd4a" message="private::NOT_TRY_BLOCK"/>
+				<validation:is-number numberType="INTEGER" doc:name="Validate someNumber" doc:id="e3a5b78c-13ad-4846-bd5f-3340d80a52c0" value="#[attributes.queryParams.someNumber]" minValue="0" maxValue="9999" message="#['Value entered ' ++ (attributes.queryParams.someNumber as String) ++ ' is not valid (0-9999)']" />
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6d3f5b64-3d5a-436d-ba8e-3aaaac373693" >
+				<logger level="ERROR" doc:name="Log Propagate - Private" doc:id="44aa5d0a-3232-4ccf-b13a-2e9cfe65384f" message="private::ErrorHandling::OnErrorPropagate" />
+				<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+	"errorHandler": "private-error-handler",
+	"errorType": error.errorType.identifier,
+	"errorMessage": error.description
+}]' doc:name="Error - private flow" doc:id="cf5065b6-7091-4aab-a249-aa0a8aa57155" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="privateContinue" doc:id="266290ea-c72e-4ed7-8985-f1d4a100da99">
+		<logger level="INFO" doc:name="START" doc:id="b8628add-dd4f-45d9-91cf-dbcb68fdc3fb" message="main-private::private::START" />
+		<choice doc:name="useTryBlock?" doc:id="35333217-037e-46e1-96cd-5c22fb5e051f" >
+			<when expression='#[vars.useTryBlock == "true"]'>
+				<try doc:name="Try" doc:id="f8494cf1-37c5-4359-8657-e57df7ab7615" >
+					<validation:is-number numberType="INTEGER" doc:name="Validate someNumber" doc:id="2f79e554-ec93-4a33-82bd-c6d1b089a30c" value="#[attributes.queryParams.someNumber]" minValue="0" maxValue="9999" message="#['Value entered ' ++ (attributes.queryParams.someNumber as String) ++ ' is not valid (0-9999)']" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0851c9ef-8b76-427e-b657-1575ebe5e439" >
+							<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+	"errorHandler": "try-block-error-handler-continue",
+	"errorType": error.errorType.identifier,
+	"errorMessage": error.description
+}]' doc:name="validation error" doc:id="2194ec39-15cb-4b16-a675-5280b2d37579" />
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</when>
+			<otherwise >
+				<validation:is-number numberType="INTEGER" doc:name="Validate someNumber" doc:id="26b67753-b548-4fa1-bac9-ccc6edf8cf5b" value="#[attributes.queryParams.someNumber]" minValue="0" maxValue="9999" message="#['Value entered ' ++ (attributes.queryParams.someNumber as String) ++ ' is not valid (0-9999)']" />
+			</otherwise>
+		</choice>
+		<set-payload value="#['ContinueD After TRY_BLOCK']" doc:name="continue past TRY_BLOCK" doc:id="9aa77997-5230-42e3-abc0-2cbffba8c3aa" />
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="50cd33aa-1925-4b4e-b9d4-81a515e1ee37" >
+				<logger level="INFO" doc:name="Log Propagate - Private" doc:id="3b7266ac-76e0-4a36-941a-403d97586c1b" message="private::ErrorHandling::OnErrorContinue" />
+				<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+	"errorHandler": "private-error-handler-continue",
+	"errorType": error.errorType.identifier,
+	"errorMessage": error.description
+}]' doc:name="Error - private flow" doc:id="29d78919-2041-430b-a51e-febfba299455" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

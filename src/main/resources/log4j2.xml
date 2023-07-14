@@ -9,8 +9,8 @@
         see them in the mule_ee.log file. -->
 
     <Appenders>
-        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}ca-music-factory-api.log" 
-                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}ca-music-factory-api-%i.log">
+        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}errorhandlingquiz.log" 
+                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}errorhandlingquiz-%i.log">
             <PatternLayout pattern="%-5p %d [%t] [event: %X{correlationId}] %c: %m%n" />
             <SizeBasedTriggeringPolicy size="10 MB" />
             <DefaultRolloverStrategy max="10"/>
@@ -25,10 +25,6 @@
     
 		<!-- Mule logger -->        
         <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>
- 
- 		<!-- SPS Logger -->  
- 	<!-- 	<AsyncLogger name="SPS_JSON_APPENDER" level="DEBUG"> 
-		</AsyncLogger> -->
  
         <AsyncRoot level="INFO">
             <AppenderRef ref="file" />
