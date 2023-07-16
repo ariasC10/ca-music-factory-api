@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get:\albums:ca-music-factory-api-config">
+        <set-variable value="impl-get-albums" doc:name="currentFlow" doc:id="ec012bb7-8dce-4875-a4c8-c42d14adaa90" variableName="currentFlow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="6611d884-20be-4d68-b70f-fb1beda00103" name="impl-get-albums"/>
+    </flow>
+	<flow name="get:\albums\(albumId):ca-music-factory-api-config">
+		<ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="albumId">attributes.uriParams.'albumId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  statusCode: 200,
+  message: "SUCCESS",
+  album: {
+    albumTitle: "Let It Be (CD)",
+    genre: "Rock",
+    publicationDate: "2000-05-18",
+    artistId: 1,
+    artistName: "The Beatles"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+	<flow name="post:\albums:application\json:ca-music-factory-api-config">
+        <set-variable value="artists-main::impl-add-albums" doc:name="currentFlow" doc:id="7766dc68-be51-404f-ad3c-7d8883b5b40f" variableName="currentFlow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="a32f1d0d-c52b-40fb-bef6-88f8cf19012a" name="impl-add-albums"/>
+		<ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  statusCode: 201,
+  message: "SUCCESS",
+  albums: [
+    {
+      albumId: 1001,
+      albumTitle: "Telegraph Canyon I",
+      genre: "Pop",
+      publicationDate: "2016-01-29",
+      artistId: 5,
+      artistName: "His Majesty"
+    }, 
+    {
+      albumId: 1002,
+      albumTitle: "Telegraph Canyon II",
+      genre: "Pop",
+      publicationDate: "2018-01-29",
+      artistId: 5,
+      artistName: "Prince"
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+	<flow name="put:\albums\(albumId):application\json:ca-music-factory-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="albumId">attributes.uriParams.'albumId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  statusCode: 200,
+  message: "The album has been updated."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="delete:\albums\(albumId):ca-music-factory-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="albumId">attributes.uriParams.'albumId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  statusCode: 200,
+  message: "The album has been deleted."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+
+	</mule>
