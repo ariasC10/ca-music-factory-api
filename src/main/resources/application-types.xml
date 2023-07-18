@@ -419,6 +419,17 @@ type auto_dd2e8d1c_93e8_4eee_944d_606d1569e085_Output_Variables_bioUrl = Null
 
 ]]></types:shape>
     </types:type>
+    <types:type name="batchReport" format="json">
+      <types:shape format="weave" example="examples/batchReport.json"><![CDATA[%dw 2.0
+
+type batchReport = {|
+  totalRecords: Number {"typeId": "int"}, 
+  failedRecords: Number {"typeId": "int"}, 
+  successfulRecords: Number {"typeId": "int"}
+|} {"example": "{\\\"totalRecords\\\":15,\\\"failedRecords\\\":2,\\\"successfulRecords\\\":13}"}
+
+]]></types:shape>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#49c5d87d-e699-41c7-b3eb-97d9a15e22e5">
     <types:processor-declaration>
@@ -566,6 +577,15 @@ type auto_dd2e8d1c_93e8_4eee_944d_606d1569e085_Output_Variables_bioUrl = Null
           <types:variable name="lastFmProperties" type="auto_dd2e8d1c-93e8-4eee-944d-606d1569e085_Output-Variables-lastFmProperties"/>
           <types:variable name="bioUrl" type="auto_dd2e8d1c-93e8-4eee-944d-606d1569e085_Output-Variables-bioUrl"/>
         </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d4dd8e79-75ba-4105-bba6-e47c8e34bf71">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="batchReport"/>
+        </types:message>
       </types:output-event>
     </types:processor-declaration>
   </types:enrichment>
