@@ -6,8 +6,9 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<sub-flow name="impl-get-songs" doc:id="de48c75f-9bf5-446c-983b-4ecbf1ee7de0" >
-		<logger level="INFO" doc:name="INFO START" doc:id="b2861630-d5fd-4ad4-b4c8-c913506e2aa7" message="impl-get-songs::START"/>
+		<logger level="INFO" doc:name="INFO START" doc:id="b2861630-d5fd-4ad4-b4c8-c913506e2aa7" message="#['impl-get-songs::START::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 		<set-variable value="#[attributes.queryParams.songTitle]" doc:name="songTitle" doc:id="765d1d30-a607-4689-8277-fad80607335f" variableName="songTitle"/>
+		<logger level="INFO" doc:name="INFO STARTLogger" doc:id="833e7fb5-a06d-4dfe-b458-302def9eda9a" message="#['impl-get-songs::START::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 		<db:select doc:name="SELECT songs" doc:id="59691558-5e0f-4682-9297-36f1614fc73c" config-ref="mysql-config">
 			<db:sql ><![CDATA[SELECT SNG.SONG_ID, SNG.SONG_TITLE, SNG.PUBLICATION_DT, SNG.GENRE, 
 SNG.DURATION,ALB.TITLE AS ALBUM_NM, ART.GROUP_NM, ALB.ALBUM_ID
@@ -21,6 +22,7 @@ WHERE SONG_TITLE LIKE :songTitle]]></db:sql>
 	songTitle: vars.songTitle ++ '%'
 }]]]></db:input-parameters>
 		</db:select>
+		<logger level="INFO" doc:name="Select SongsLogger" doc:id="f6d3b37c-ff80-4d3c-894a-d0644d519cc6" message="#['impl-get-songs::SELECT::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 		<ee:transform doc:name="payload" doc:id="695190c2-0000-4ff0-951d-61a249e5b282" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -46,5 +48,7 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-	</sub-flow>
+		<logger level="INFO" doc:name="INFO END" doc:id="3da2578f-e747-4c47-9b74-1aa799f61cba" message="#['impl-get-songs::END::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
+	
+</sub-flow>
 </mule>

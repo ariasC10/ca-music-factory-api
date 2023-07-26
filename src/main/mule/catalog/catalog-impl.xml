@@ -6,7 +6,8 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<sub-flow name="impl-get-catalog" doc:id="3ffaac57-3c97-42b0-b1e2-cf5385534d92" >
-		<logger level="INFO" doc:name="INFO START" doc:id="503651a2-859d-4ec6-a752-65de5131a1a1" message="impl-get-catalog::START"/>
+		<logger level="INFO" doc:name="INFO START" doc:id="503651a2-859d-4ec6-a752-65de5131a1a1" message="'impl-get-catalog::START::payload:'  ++ write(payload, 'application/json')" category="${logcat}"/>
+		<logger level="INFO" doc:name="Group Name" doc:id="fe56b345-af46-40e9-bddc-1cfc2c22991a" message="#['impl-get-catalog::QUERYPARAM::groupName:'  ++ write(attributes.queryParams.groupName, 'application/json')]" category="${logcat}"/>
 		<db:select doc:name="Select CATALOG" doc:id="9e80920d-01fd-4498-8329-3acfba58ce61" config-ref="mysql-config">
 			<db:sql ><![CDATA[SELECT ALBUM.TITLE AS ALBUM_NM, ALBUM.PUBLICATION_DT AS ALBUM_PUBLISH,
 	   SONG.SONG_TITLE, SONG.GENRE AS SONG_GENRE, SONG.DURATION AS SONG_DURATION, 
@@ -23,6 +24,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	groupName: attributes.queryParams.groupName ++ "%"
 }]]]></db:input-parameters>
 		</db:select>
+		<logger level="INFO" doc:name="Select Catalog" doc:id="d96fdf09-7593-4fa3-8363-c1681bd538ec" message="#['impl-get-catalog::SELECT::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 		<ee:transform doc:name="payload" doc:id="4887ab1c-968b-431a-9215-cdd7493bc57b" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -61,5 +63,7 @@ fun formatDate(d: Date) = d as String {format: "MM/dd/YYYY"}
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-	</sub-flow>
+		<logger level="INFO" doc:name="INFO END" doc:id="b903b899-2fbd-42fe-841b-5bc7ecad2b2b" message="#['impl-get-catalog::END::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
+	
+</sub-flow>
 </mule>

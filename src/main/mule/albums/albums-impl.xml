@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:sps-logger="http://www.mulesoft.org/schema/mule/sps-logger" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/sps-logger http://www.mulesoft.org/schema/mule/sps-logger/current/mule-sps-logger.xsd">
 	<sub-flow name="impl-get-albums" doc:id="b22d8ba8-1699-4bc6-bacd-fb724f392a8c" >
-		<logger level="INFO" doc:name="INFO START" doc:id="ba78842e-e11d-4066-a338-54840221177e" message="impl-get-albums::START"/>
+		<logger level="INFO" doc:name="INFO START" doc:id="ba78842e-e11d-4066-a338-54840221177e" message="impl-get-albums::START" category="${logcat}"/>
 		<set-variable value="#[attributes.queryParams.albumTitle]" doc:name="albumTitle" doc:id="fdb49dd1-dd34-4701-8687-cc4267186c5f" variableName="albumTitle"/>
+		<logger level="INFO" doc:name="Album Title" doc:id="54f2e2b6-e670-4a4f-987a-1f7146327ce8" message="#['impl-get-albums::VAR::albumTitle:'  ++ write(vars.albumTitle, 'application/json')]" category="${logcat}"/>
 		<db:select doc:name="SELECT albums" doc:id="1c3927a5-f5e8-484f-b67f-a4c3296ed4cf" config-ref="mysql-config">
 			<db:sql ><![CDATA[SELECT DISTINCT ALB.ALBUM_ID, ALB.TITLE, ALB.GENRE, ALB.PUBLICATION_DT, ART.GROUP_NM, ART.ARTIST_ID
 FROM bc_album ALB LEFT OUTER JOIN BC_ARTIST ART 
@@ -20,6 +22,7 @@ GROUP BY ALB.TITLE]]></db:sql>
   albumTitle: vars.albumTitle ++ '%'
 }]]]></db:input-parameters>
 		</db:select>
+		<logger level="INFO" doc:name="Select Albums" doc:id="9fdb0bc9-f7eb-4cb8-af84-e331915a36a8" message="#['impl-get-albums::SELECT::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 		<ee:transform doc:name="payload" doc:id="49c5d87d-e699-41c7-b3eb-97d9a15e22e5" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -40,9 +43,11 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="INFO END" doc:id="2da82ff5-2ad3-4276-aacd-94c12bfd21a8" message="#['impl-get-albums::END::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 	</sub-flow>
 	<flow name="impl-add-albums" doc:id="8d4ccfd1-0bfa-49ee-b885-ec2465204479" >
 		<http:listener doc:name="Listener" doc:id="a6a0e653-1ae9-4a98-a5e4-7afc6d6a2eca" config-ref="http-listener-config" path="/batchAddAlbums"/>
+		<logger level="INFO" doc:name="INFO START" doc:id="9c0ce2b2-f7c3-479a-a448-5de9c46ec403" message="#['impl-get-albums::START::payload:'  ++ write(payload, 'application/json')]" category="${logcat}" />
 		<ee:transform doc:name="Transform Message" doc:id="2189a962-dc3d-4dbc-ac67-d6d8df7116af" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -52,13 +57,14 @@ payload.albums]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<set-variable value="#[sizeOf(payload)]" doc:name="numberOfAlbums" doc:id="3f6f8b71-b0a7-433f-a565-3339565a76ce" variableName="numberOfAlbums"/>
-		<logger level="INFO" doc:name="INFO START Albums" doc:id="80aeca11-3e61-4dc2-8084-b7c6d35b2b12" message="#['impl-add-albums::START::numberOfAlbums:'  ++ write(vars.numberOfAlbums, 'application/json')]" />
+		<logger level="INFO" doc:name="Number of Albums" doc:id="80aeca11-3e61-4dc2-8084-b7c6d35b2b12" message="#['impl-add-albums::VAR::numberOfAlbums:'  ++ write(vars.numberOfAlbums, 'application/json')]" category="${logcat}"/>
 		<batch:job jobName="impl-add-albums-batch-job" doc:id="479a3f17-054f-4167-9837-3c58b8faa7b0" maxFailedRecords="10">
 			<batch:process-records >
 				<batch:step name="process-all-records" doc:id="e497700c-e0a7-494e-9a99-43f3c21ddc6a" >
 					<set-payload value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;		albumIdParam: 		0,&#10;		titleParam: 		payload.albumTitle,&#10;		genreParam: 		payload.genre,&#10;		publicationParam: 	payload.publicationDate,&#10;		statusParam: 	"CA",&#10;		artistIdParam: 	payload.artistId&#10;}]' doc:name="Insert payload" doc:id="8d4077c2-bbe5-4d25-9d0c-1ba6a372fb55" />
-					<logger level="INFO" doc:name="payload" doc:id="b2d62a78-677d-4392-b15a-f2f62199d555" message="#['impl-add-albums::START::ProcessAllRecords:'  ++ write(payload, 'application/json')]"/>
+					<logger level="DEBUG" doc:name="payload" doc:id="b2d62a78-677d-4392-b15a-f2f62199d555" message="#['impl-add-albums::BATCH::processAllRecords:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 					<batch:aggregator doc:name="bulk-insert-albums" doc:id="4dc26e1c-c095-4694-a03e-55b130ab3f59" size="3">
+						<logger level="DEBUG" doc:name="BULK START" doc:id="a194c54e-77f1-49be-afac-83785af97b58" message="#['impl-add-albums::BULKSTART::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 						<db:bulk-insert doc:name="Bulk insert Album" doc:id="838bb622-ed42-41a7-8f76-15ebb75f7614" config-ref="mysql-config">
 							<db:sql ><![CDATA[insert into BC_MUSIC_FACTORY.BC_ALBUM 
    (album_id,title, genre, publication_dt, status_cd, artist_id) values
@@ -70,10 +76,11 @@ payload.albums]]></ee:set-payload>
         :artistIdParam)
 ]]></db:sql>
 						</db:bulk-insert>
+						<logger level="INFO" doc:name="BULK END" doc:id="96c056fb-7217-4432-8837-86ed43b5cca7" message="#['impl-add-albums::BULKEND::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 					</batch:aggregator>
 				</batch:step>
 				<batch:step name="failures-only-step" doc:id="94c5a388-5d5a-4699-a204-b81a1260cd5d" acceptPolicy="ONLY_FAILURES">
-					<logger level="WARN" doc:name="payload" doc:id="5d3700fc-a6b0-4b33-950f-b7e0c7de2d54" message="#['impl-add-albums::Batch::FailuresOnlyStep:'  ++ write(payload, 'application/json')]"/>
+					<logger level="WARN" doc:name="Failure" doc:id="5d3700fc-a6b0-4b33-950f-b7e0c7de2d54" message="#['impl-add-albums::BATCH::FailuresOnlyStep:'  ++ write(payload, 'application/json')]" category=" ${logcat}"/>
 					<db:insert doc:name="Record Album Title as Error" doc:id="27e1741d-fee6-4bc3-bb6c-053040774372" config-ref="mysql-config">
 						<db:sql ><![CDATA[INSERT INTO BC_MUSIC_FACTORY.BC_STAGING_ERROR (STAGING_ID, STAGING_RECORD, STATUS_CD) 
     VALUES (NULL, :stagingRecord, :statusParam)]]></db:sql>
@@ -82,6 +89,7 @@ payload.albums]]></ee:set-payload>
     statusParam: payload.statusParam as String
 }]]]></db:input-parameters>
 					</db:insert>
+					<logger level="WARN" doc:name="Insert Failure" doc:id="f73a1fd1-6327-4d13-bf8a-74b598279a6e" message="#['impl-add-albums::BATCH::InsertFailure:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
 				</batch:step>
 			</batch:process-records>
 			<batch:on-complete >
@@ -99,7 +107,7 @@ var batchSummary = payload
 ]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-				<logger level="INFO" doc:name="payload" doc:id="3fab86a8-1f0a-4740-bf25-9fdb16e143c6" message="#['impl-add-albums::START::OnComplete:'  ++ write(payload, 'application/json')]"/>
+				<logger level="INFO" doc:name="payload" doc:id="3fab86a8-1f0a-4740-bf25-9fdb16e143c6" message="#['impl-add-albums::END::OnComplete:'  ++ write(payload, 'application/json')]" category=" ${logcat}"/>
 			</batch:on-complete>
 		</batch:job>
 	</flow>
