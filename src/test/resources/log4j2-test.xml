@@ -15,6 +15,9 @@
     
 		<!-- Mule logger -->        
         <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>  
+        
+        <!-- SPS logger -->
+        <AsyncLogger name="SPS_JSON_APPENDER" level="DEBUG"/>
 
         <AsyncRoot level="INFO">
             <AppenderRef ref="Console"/>

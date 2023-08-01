@@ -7,9 +7,18 @@
             <SizeBasedTriggeringPolicy size="10 MB" />
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
-        <Console name="Console" target="SYSTEM_OUT">
-        	<JSONLayout objectMessageAsJsonObject="true"/>
-		</Console>
+<!--         <Console name="Console" target="SYSTEM_OUT"> -->
+<!--         	<JSONLayout objectMessageAsJsonObject="true"/> -->
+<!-- 		</Console> -->
+		<RollingFile name="JsonFile"
+				fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}SPS-Log-Json.log"
+				filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}SPS-Log-Json-%d{yyyy-MM-dd}-%i.log"
+				append="true">
+			<JSONLayout complete="false" compact="true" eventEol="true" objectMessageAsJsonObject="true" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+		</RollingFile>
     </Appenders>
     <Loggers>
         
@@ -22,17 +31,15 @@
         <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>
         
         <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="WARN"/>
-		<AsyncLogger name="com.puntosingular.soluciones" level="DEBUG"/>
  
  		<!-- SPS Logger -->  
- 	<!-- 	<AsyncLogger name="SPS_JSON_APPENDER" level="DEBUG"> 
-		</AsyncLogger> -->
+ 		<AsyncLogger name="SPS_JSON_APPENDER" level="DEBUG">
+ 			<AppenderRef ref="JsonFile" />
+ 		</AsyncLogger>
  
         <AsyncRoot level="INFO">
             <AppenderRef ref="file" />
-            <AppenderRef ref="Console" />
+<!--             <AppenderRef ref="Console" /> -->
         </AsyncRoot>
-       
-             
     </Loggers>
 </Configuration>
