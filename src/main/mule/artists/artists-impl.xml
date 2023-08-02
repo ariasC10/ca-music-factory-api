@@ -158,7 +158,7 @@ output application/json
     deathDate: 	vars.incomingArtist.dateOfDeath
 }]]]></db:input-parameters>
 		</db:insert>
-			<sps-logger:sps-logger doc:name="Artist" doc:id="bfd68105-efed-4bab-8d32-6f3f7c5b5d72" config-ref="SPS_Logger_Config" targetSystem="${db.databaseMusic}" eventName="AFTER REQUEST" level="DEBUG" correlationId="#[[vars.headerAttributes.correlationId]" message="#['sr-insert-artist::Try::Artist:' ++ write(payload, 'application/json')]" category="${logcat}"/>
+			<sps-logger:sps-logger doc:name="Artist" doc:id="bfd68105-efed-4bab-8d32-6f3f7c5b5d72" config-ref="SPS_Logger_Config" targetSystem="${db.databaseMusic}" eventName="AFTER REQUEST" level="DEBUG" correlationId="#[vars.headerAttributes.correlationId]" message="#['sr-insert-artist::Try::Artist:' ++ write(payload, 'application/json')]" category="${logcat}"/>
 			<db:select doc:name="Select Insert" doc:id="e2e68d97-f15e-4ece-8678-a965a376dc3b" config-ref="mysql-config" target="newArtistId">
 			<db:sql><![CDATA[SELECT MAX(artist_id) AS artist_id from BC_MUSIC_FACTORY.bc_artist
     WHERE GROUP_NM = :groupName 
