@@ -1,7 +1,13 @@
 #%RAML 1.0
 title: CA-Music Factory API
 baseUri: http://localhost:8081/
-version: v1.0
+version: v1
+#######################################################################
+# WHO  WHEN      WHY                                                  #
+# CEAC 04-08-23  Initial API with artist, album, song staging features#
+# CEAC 04-08-23  Add media support for albums                         #
+#######################################################################
+
 
 uses:
   albumResponses: types/album/albumResponseTypesLibrary.raml
@@ -15,7 +21,8 @@ uses:
   songQueries: queries/getSongs.raml
   catalogResponses: types/catalog/catalogResponseTypesLibrary.raml
   catalogQueries: queries/getCatalog.raml
-  commonTraits: commonTraits.raml
+  commonTraits:	commonTraits.raml
+  mediaResponses: types/media/mediaResponseTypesLibrary.raml
 
 resourceTypes:
   collection: !include resourceTypes/collection.raml
@@ -163,8 +170,11 @@ resourceTypes:
     delete:
       description: Method detele a specific album
 
-  
-
- 
-    
-
+    /media:
+      description: The media provides the means to return some data from an album
+      is: [commonTraits.clientIdRequired, commonTraits.correlationRequired, commonTraits.errorResponseRequired]
+      type:
+        item:
+          getResponseType: mediaResponses.mediaResponseForGet
+          getResponseJson: !include examples/media/responses/mediaGetResponse.json      
+      get:

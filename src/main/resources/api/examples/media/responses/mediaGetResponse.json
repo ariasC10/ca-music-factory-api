@@ -1,0 +1,24 @@
+{
+  "statusCode": 200,
+  "message": "SUCCESS",
+  "media": [
+    {
+      "albumId": 2,
+      "albumName": "Let It Be",
+      "mediaType": "CD",
+      "availabilityDate": "2000-05-18"
+    },
+    {
+      "albumId": 2,
+      "albumName": "Let It Be",
+      "mediaType": "Cassette",
+      "availabilityDate": "1975-04-22"
+    },
+    {
+      "albumId": 2,
+      "albumName": "Let It Be",
+      "mediaType": "Vinyl",
+      "availabilityDate": "1970-11-18"
+    }
+  ]
+}

@@ -74,4 +74,44 @@ output application/json
         </ee:transform>
     </flow>
 
+<flow name="get:\albums\(albumId)\media:ca-music-factory-api-config">
+        <ee:transform doc:name="albumId">
+            <ee:variables>
+                <ee:set-variable variableName="albumId">attributes.uriParams.'albumId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="payload media">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  statusCode: 200,
+  message: "SUCCESS",
+  media: [
+    {
+      albumId: 2,
+      albumName: "Let It Be",
+      mediaType: "CD",
+      availabilityDate: "2000-05-18"
+    }, 
+    {
+      albumId: 2,
+      albumName: "Let It Be",
+      mediaType: "Cassette",
+      availabilityDate: "1975-04-22"
+    }, 
+    {
+      albumId: 2,
+      albumName: "Let It Be",
+      mediaType: "Vinyl",
+      availabilityDate: "1970-11-18"
+    }
+  ]
+}
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+
 	</mule>
