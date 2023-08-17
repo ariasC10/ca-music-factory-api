@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="munit-basics-fully-mocked-test.xml"/>
+	<munit:test description="Test" doc:id="3f3d6e58-b09a-41ed-a775-79846a89887e" name="munit-basics-fully-mocked-test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="1a2b1336-289e-40cc-8aba-0527d0f764be" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="add" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/xml&#10;---&#10;{&#10;    body:&#10;       readUrl('classpath://mocks/calcAddResponse.xml','application/xml')&#10;}]" mediaType="application/xml" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:id="3027ebff-e937-43e1-9c61-55a30cf73e78" doc:name="Flow-ref to munit-calc-add" name="munit-calc-add"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9960b31a-68c6-43ed-b936-888078db48f6" is='#[MunitTools::equalTo("20")]' expression="#[payload.result]"/>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="088110df-46f0-411b-9643-f0b74e1a8d14" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="add" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
