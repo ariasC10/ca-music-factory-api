@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="albums-impl-get-albums-test.xml"/>
+	<munit:test description="Test" doc:id="0553a370-a434-49bc-8d56-947617e2f212" name="albums-impl-test-suite">
+		<munit:behavior>
+			<munit-tools:spy doc:name="albumTitle" doc:id="4333d03d-8691-45a6-b39c-01f93dbd3d58" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="fdb49dd1-dd34-4701-8687-cc4267186c5f" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="albumTitle" attributeName="variableName" />
+					<munit-tools:with-attribute whereValue="fdb49dd1-dd34-4701-8687-cc4267186c5f" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="albumTitle" attributeName="variableName" />
+					<munit-tools:with-attribute whereValue="fdb49dd1-dd34-4701-8687-cc4267186c5f" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="albumTitle" attributeName="variableName" />
+					<munit-tools:with-attribute whereValue="fdb49dd1-dd34-4701-8687-cc4267186c5f" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="albumTitle" attributeName="variableName" />
+					<munit-tools:with-attribute whereValue="fdb49dd1-dd34-4701-8687-cc4267186c5f" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="albumTitle" attributeName="variableName" />
+				</munit-tools:with-attributes>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that albumTitle is Let it Be" doc:id="0c5ac68e-0ded-4f3a-bf20-8d9a8311715a" expression="#[attributes.queryParams.albumTitle]" is='#[MunitTools::equalTo("Let it Be")]' message="albumTitle is Munit Test" />
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit-tools:mock-when doc:id="195c4459-b492-40df-836b-c98d456a9b51" doc:name="Mock when select" processor="db:select">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="SELECT albums"/>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="1c3927a5-f5e8-484f-b67f-a4c3296ed4cf"/>
+					<munit-tools:with-attribute attributeName="config-ref" whereValue="mysql-config"/>
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/java&#10;---&#10;[&#10;  {&#10;    &quot;ALBUM_ID&quot;: 1,&#10;    &quot;TITLE&quot;: &quot;MUnit Let It Be&quot;,&#10;    &quot;GENRE&quot;: &quot;ROCK&quot;,&#10;    &quot;PUBLICATION_DT&quot;: &quot;1970-05-08&quot;,&#10;    &quot;ARTIST_ID&quot;: 1,&#10;    &quot;ARTIST_NM&quot;: &quot;The Beatles&quot;&#10;  },&#10;  {&#10;    &quot;ALBUM_ID&quot;: 2,&#10;    &quot;TITLE&quot;: &quot;MUnit Let It Be (CD)&quot;,&#10;    &quot;GENRE&quot;: &quot;ROCK&quot;,&#10;    &quot;PUBLICATION_DT&quot;: &quot;1970-05-08&quot;,&#10;    &quot;ARTIST_ID&quot;: 1,&#10;    &quot;ARTIST_NM&quot;: &quot;The Beatles&quot;&#10;  }&#10;]]"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="select" doc:id="79f41623-305c-47f3-a2f2-ca6ccc16ea8d" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="49c5d87d-e699-41c7-b3eb-97d9a15e22e5" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="49c5d87d-e699-41c7-b3eb-97d9a15e22e5" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="49c5d87d-e699-41c7-b3eb-97d9a15e22e5" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="49c5d87d-e699-41c7-b3eb-97d9a15e22e5" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="49c5d87d-e699-41c7-b3eb-97d9a15e22e5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call>
+					<munit-tools:assert-equals doc:name="Assert equals Select Size =2" doc:id="2a55f424-e349-41b9-aff0-152003bd17f5" actual="#[sizeOf(payload)]" expected="#[2]" message="SIZE = 2"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-equals doc:name="Assert equals Transform Size =2" doc:id="2554687f-8c23-4974-9a5b-516111abed7b" actual="#[sizeOf(payload.albums)]" expected="#[2]" message="SIZE = 2"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:id="37cae385-9c5b-49db-9f11-47452225cb7c" doc:name="albumTitle queryParam">
+				<munit:attributes value="#[{queryParams: {&quot;albumTitle&quot;:&quot;Let it Be&quot;}}]"/>
+				<munit:variables>
+					<munit:variable key="headerAttributes" mediaType="application/java" value=" #[{correlationId: '12345', clientId: '12345', clientSecret: '12345'}]"/>
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:id="e6a9a3a5-9c6c-498a-aab9-2f20f1cd3114" doc:name="Flow-ref to impl-get-albums" name="impl-get-albums"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:id="2e95bc8a-8a18-414f-93c3-961d30d89508" doc:name="Assert that NOT null" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="NOT null"/>
+			<munit-tools:assert-that doc:id="39a695a9-30c6-4989-9c41-f06c037090b1" doc:name="Assert that Size = 2" expression="#[sizeOf(payload.albums)]" is="#[MunitTools::equalTo(2)]" message="SIZE = 2"/>
+			<munit-tools:assert-that doc:id="47f9ef24-c9c5-490d-b313-39d8ec5386b2" doc:name="Assert that payload content" expression="#[payload.albums[0].albumTitle]" is="#[MunitTools::startsWith(&quot;MUnit&quot;)]" message="startsWith MUnit"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
