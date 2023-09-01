@@ -1,0 +1,36 @@
+#%RAML 1.0 Library
+usage: Used as the source of resources dataTypes related to the media
+types:
+
+  mediaResponseForGet:
+    type: object
+    properties: 
+      statusCode:
+        type: number
+        minimum: 100
+        maximum: 599
+        required: true
+      message:
+        type: string
+        required: true
+      media:
+        type: array
+        items:
+          properties:
+            mediaType:
+              type: string
+              enum:
+                - CD
+                - Cassette
+                - Vinyl
+                - Streaming
+                - Other
+            availabilityDate:
+              type: date-only
+              required: true
+            mediaId:
+              type: number
+              required: false
+            albumId:
+              type: number 
+              required: false

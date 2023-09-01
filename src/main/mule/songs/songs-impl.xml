@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sps-logger="http://www.mulesoft.org/schema/mule/sps-logger" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/sps-logger http://www.mulesoft.org/schema/mule/sps-logger/current/mule-sps-logger.xsd">
+	<sub-flow name="impl-get-songs" doc:id="de48c75f-9bf5-446c-983b-4ecbf1ee7de0" >
+		<sps-logger:sps-logger doc:name="INFO START" doc:id="81e12515-9424-44e5-bfb2-d838f51ff92f" config-ref="SPS_Logger_Config" eventName="START" correlationId="#[vars.headerAttributes.correlationId]" message="#['impl-get-songs::START::payload:'  ++ write(payload, 'application/json')]" category="${logcat}"/>
+		<set-variable value="#[attributes.queryParams.songTitle]" doc:name="songTitle" doc:id="765d1d30-a607-4689-8277-fad80607335f" variableName="songTitle"/>
+		<sps-logger:sps-logger doc:name="Song Title" doc:id="d72c34d0-d1a8-4642-8d6e-8b25c3009ead" config-ref="SPS_Logger_Config" targetSystem="${db.databaseMusic}" eventName="BEFORE REQUEST" level="DEBUG" correlationId="#[vars.headerAttributes.correlationId]" message="#['impl-get-songs::Var::SongTitle:'  ++ write(vars.songTitle, 'application/json')]" category="${logcat}"/>
+		<db:select doc:name="SELECT songs" doc:id="59691558-5e0f-4682-9297-36f1614fc73c" config-ref="mysql-config">
+			<db:sql ><![CDATA[SELECT SNG.SONG_ID, SNG.SONG_TITLE, SNG.PUBLICATION_DT, SNG.GENRE, 
+SNG.DURATION,ALB.TITLE AS ALBUM_NM, ART.GROUP_NM, ALB.ALBUM_ID
+    FROM BC_SONG SNG
+        LEFT OUTER JOIN BC_ALBUM ALB 
+          ON SNG.ALBUM_ID = ALB.ALBUM_ID
+        LEFT OUTER JOIN BC_ARTIST ART 
+          ON ALB.ARTIST_ID = ART.ARTIST_ID
+WHERE SONG_TITLE LIKE :songTitle]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	songTitle: vars.songTitle ++ '%'
+}]]]></db:input-parameters>
+		</db:select>
+		<sps-logger:sps-logger doc:name="Select Songs" doc:id="d051d2e7-0da9-48fd-9dce-3560a9196034" config-ref="SPS_Logger_Config" targetSystem="${db.databaseMusic}" eventName="AFTER REQUEST" level="DEBUG" correlationId="#[vars.headerAttributes.correlationId]" message="#['impl-get-songs::SELECT::payload:' ++ write(payload, 'application/json')]" category="${logcat}"/>
+		<ee:transform doc:name="payload" doc:id="695190c2-0000-4ff0-951d-61a249e5b282" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: p('http.get.status.ok'),
+	message: p('http.get.message.ok'),
+	searchCriteria: vars.songTitle,
+	songs: payload map ( song ) ->
+	{
+		songId: song.SONG_ID,
+		songTitle: song.SONG_TITLE,
+		genre: song.GENRE default "",
+		publicationDate: song.PUBLICATION_DT as String { format: "yyyy-MM-dd" } default "",
+		duration: song.DURATION default "",
+		albumId: song.ALBUM_ID default 0,
+		albumName: song.ALBUM_NM default "",
+		songWriters: [{
+			writer: song.GROUP_NM default ""
+		}]
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<sps-logger:sps-logger doc:name="INFO END" doc:id="59de19d0-50ef-4d50-ae10-3f40ca6f1303" config-ref="SPS_Logger_Config" eventName="END" correlationId="#[vars.headerAttributes.correlationId]" message="#['impl-get-songs::END::payload:'  ++ write(payload, 'application/json')]"/>
+	
+</sub-flow>
+</mule>

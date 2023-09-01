@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_5e19f688_292d_4c96_8793_44774dc04938_Input_Variables_lastFmProperties = Any
+

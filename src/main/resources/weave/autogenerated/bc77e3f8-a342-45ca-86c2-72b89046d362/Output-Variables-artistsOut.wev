@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_bc77e3f8_a342_45ca_86c2_72b89046d362_Output_Variables_artistsOut = Array<Nothing>
+
