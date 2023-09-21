@@ -49,12 +49,20 @@
 					</execution>
 				</executions>
 				<configuration>
-					<coverage>
-						<runCoverage>true</runCoverage>
-						<formats>
-							<format>html</format>
-						</formats>
-					</coverage>
+					<runtimeVersion>4.4.0-20230822</runtimeVersion>
+					<argLines>
+					  <argLine>-Danypoint.platform.gatekeeper=disabled</argLine>
+				    </argLines>
+				    <coverage>
+				        <runCoverage>true
+				    </runCoverage>
+				    <failBuild>true</failBuild>
+				    <formats>
+				        <format>console</format>
+					  <format>html</format>
+					  <format>json</format>
+				    </formats>
+				    </coverage>
 				</configuration>
 			</plugin>
 		</plugins>
